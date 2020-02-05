@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.w3.org/1999/xhtml" layout:decorator="layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h2>添加寝室区</h2>
+    <br>
+    <form class="layui-form layui-form-pane form" action="" lay-filter="form">
+        <div class="layui-form-item">
+            <label class="layui-form-label">所属学校</label>
+            <div class="layui-input-inline">
+                <select name="schoolId" id="schoolId" lay-search lay-verify="required" lay-filter="schoolSelect">
+                    <option value="">请选择</option>
+                    <option value="1" th:each="school : ${schoolList}" th:value="${school.id}" th:text="${school.name}">湖南农业大学</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">名称</label>
+            <div class="layui-input-inline">
+                <input type="text" name="name" placeholder="请输入名称" autocomplete="off" class="layui-input" lay-verify="required">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <button class="layui-btn" lay-submit lay-filter="insertSubmit">添加</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </form>
+
+    <script>
+        layui.use('form', function() {
+            var form = layui.form;
+            // 监听添加
+            form.on('submit(insertSubmit)', function (data) {
+                // layer.msg(JSON.stringify(data.field));
+                var field = data.field;
+                $.ajax({
+                    type: 'post',
+                    url: '/admin/dormitory/insertAction',
+                    data: field,
+                    success: function (data) {
+                        if (data){
+                            $('.form')[0].reset();
+                            layer.msg("添加成功");
+                        }else {
+                            layer.msg("添加失败");
+                        }
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+</div>
+</body>
+</html>

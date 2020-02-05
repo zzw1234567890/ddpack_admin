@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.w3.org/1999/xhtml" layout:decorator="layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h2>添加学校</h2>
+    <br>
+    <input type="hidden" name="option" value="" title="" class="tpl" lay-filter="nameRadio">
+    <form class="layui-form layui-form-pane form" action="" lay-filter="form">
+        <div class="layui-form-item">
+            <label class="layui-form-label">城市</label>
+            <div class="layui-input-inline">
+                <input type="text" name="city" placeholder="请输入城市名称" autocomplete="off" class="layui-input" lay-verify="required">
+            </div>
+            <label class="layui-form-label">学校名称</label>
+            <div class="layui-input-inline">
+                <input type="text" name="name" placeholder="请输入学校名称" autocomplete="off" class="layui-input" lay-verify="required">
+            </div>
+            <button class="layui-btn" id="query" lay-submit lay-filter="querySubmit">搜索</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">纬度</label>
+            <div class="layui-input-inline">
+                <input type="text" name="lat" value="" id="lat" class="layui-input" disabled>
+            </div>
+            <label class="layui-form-label">经度</label>
+            <div class="layui-input-inline">
+                <input type="text" name="lng" value="" id="lng" class="layui-input" disabled>
+            </div>
+        </div>
+        <div class="layui-input-inline list" style="margin-bottom: 20px"></div>
+        <div class="layui-form-item">
+            <button class="layui-btn" id="insert" lay-submit lay-filter="insertSubmit">添加</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </form>
+
+
+    <script src="https://map.qq.com/api/gljs?v=1.exp&key=OB4BZ-D4W3U-B7VVO-4PJWW-6TKDJ-WPB77"></script>
+    <script src="/js/map.js"></script>
+
+    <script>
+        layui.use('form', function() {
+            var form = layui.form;
+            // 监听查询提交
+            form.on('submit(querySubmit)', function (data) {
+                // layer.msg(JSON.stringify(data.field));
+                var field = data.field;
+                var addressData = getData('/school/getLocation',{city: field.city,name: field.name});
+                var list = $('.list');
+                list.empty();
+                for (var key in addressData.data){
+                    var temp = addressData.data[key];
+                    var tpl = $('.tpl').clone();
+                    var title = temp.title + ' [' + temp.address + '] (' + temp.location.lat + ', ' + temp.location.lng + ')';
+                    tpl.attr('title',title);
+                    tpl.attr('type','radio');
+                    tpl.attr('value',temp.title);
+                    tpl.attr('lat',temp.location.lat);
+                    tpl.attr('lng',temp.location.lng);
+                    tpl.removeClass('tpl');
+                    list.append(tpl);
+                }
+                form.render();
+                return false;
+            });
+            // 监听添加提交
+            form.on('submit(insertSubmit)', function (data) {
+                // layer.msg(JSON.stringify(data.field));
+                var field = data.field;
+                if (!field.lat || ! field.lng){
+                    layer.msg('请先查询，然后选择结果');
+                    return false;
+                }
+                $.ajax({
+                    type: 'post',
+                    url: '/school/insertAction',
+                    data: field,
+                    success: function (data) {
+                        if (data){
+                            $('.form')[0].reset();
+                            $('.list').empty();
+                            layer.msg("添加成功");
+                        }else {
+                            layer.msg("添加失败");
+                        }
+                    }
+                });
+                return false;
+            });
+            // 监听单选选中
+            form.on('radio(nameRadio)', function(data){
+                var obj = $(data.elem);
+                form.val('form',{
+                    lat: obj.attr('lat'),
+                    lng: obj.attr('lng')
+                });
+            });
+        });
+    </script>
+</div>
+</body>
+</html>

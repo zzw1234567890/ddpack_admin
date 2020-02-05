@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.w3.org/1999/xhtml"
+      layout:decorator="layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+        #img{
+            border-radius: 5px;
+            width: 300px;
+            height: 300px;
+        }
+        .img-describe{
+            position: relative;
+            vertical-align: top;
+            top: 18px;
+            left: 20px;
+            color: gray;
+        }
+        .right{
+            display: inline-block;
+            margin-left: 15px;
+        }
+        .left{
+            vertical-align: top;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+    <h2>取货地址管理</h2>
+    <br>
+    <form class="layui-form layui-form-pane form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">所属学校</label>
+            <div class="layui-input-inline">
+                <select name="schoolId" id="schoolId-query" lay-search>
+                    <option value="">请选择</option>
+                    <option value="1" th:each="school : ${schoolList}" th:value="${school.id}" th:text="${school.name}">
+                        湖南农业大学
+                    </option>
+                </select>
+            </div>
+            <label class="layui-form-label">快递公司</label>
+            <div class="layui-input-inline">
+                <input type="text" name="company" placeholder="请输入快递公司" autocomplete="off" class="layui-input">
+            </div>
+            <label class="layui-form-label">地址</label>
+            <div class="layui-input-inline">
+                <input type="text" name="pickAddress" placeholder="请输入地址" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">添加时间从</label>
+            <div class="layui-input-inline">
+                <input type="text" name="startTime" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input"
+                       id="startTime">
+            </div>
+            <label class="layui-form-label">到</label>
+            <div class="layui-input-inline">
+                <input type="text" name="endTime" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input"
+                       id="endTime">
+            </div>
+            <button class="layui-btn" id="query" lay-submit lay-filter="querySubmit">查询</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </form>
+
+    <table id="table" lay-filter="table"></table>
+
+    <form id="update" class="layui-form layui-form-pane form" action="" lay-filter="updateForm">
+        <div class="left">
+            <div class="layui-input-inline" style="width: auto;">
+                <img src="/img/head.jpg" alt="" id="img">
+            </div>
+        </div>
+        <div class="right">
+            <div class="layui-form-item">
+                <div class="layui-btn" id="upload">上传图片</div>
+                <span class="img-describe">图片分辨率 : 300 * 300</span>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">所属学校</label>
+                <div class="layui-input-inline">
+                    <select name="schoolId" id="schoolId" lay-search lay-verify="required" lay-filter="schoolSelect">
+                        <option value="">请选择</option>
+                        <option value="1" th:each="school : ${schoolList}" th:value="${school.id}"
+                                th:text="${school.name}">湖南农业大学
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">快递公司</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="company" placeholder="请输入快递公司" autocomplete="off" class="layui-input"
+                           lay-verify="required">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">地址</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="pickAddress" placeholder="请输入地址" autocomplete="off" class="layui-input"
+                           lay-verify="required">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <button class="layui-btn" lay-submit lay-filter="updateSubmit">修改</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+    </form>
+
+    <script>
+        layui.use(['form', 'laydate', 'table','upload'], function () {
+            var form = layui.form;
+            var table = layui.table;
+            var laydate = layui.laydate;
+            var upload = layui.upload;
+            var uploadFile;
+            laydate.render({
+                elem: '#startTime'
+            });
+            laydate.render({
+                elem: '#endTime'
+            });
+
+            var tableIns = tableInstance(table, '/pickAddress/query', [
+                {field: 'id', title: 'ID', width: 80, sort: true, fixed: 'left'},
+                {field: 'schoolId', title: '所属学校id'},
+                {field: 'company', title: '快递公司'},
+                {field: 'pickAddress', title: '地址'}
+            ]);
+            querySubmit(form, tableIns);
+            listenTool(table, form, '/pickAddress/get', null, '/pickAddress/del', '/pickAddress/insert');
+            // 文件上传
+            upload.render({
+                elem: '#upload'
+                // , url: '/api/upload/'
+                , auto: false //选择文件后不自动上传
+                , choose: function (obj) {
+                    obj.preview(function (index, file, result) {
+                        // console.log(index); //得到文件索引
+                        // console.log(file); //得到文件对象
+                        uploadFile = file;
+                        $('#img').attr('src', result);
+                    });
+                }
+            });
+            // 更新
+            form.on('submit(updateSubmit)', function (data) {
+                var field = data.field;
+                field.id = $('#update').attr('data-id');
+                console.log(field);
+                var formData = new FormData();
+                formData.append('file', uploadFile);
+                formData.append('data', JSON.stringify(field));
+                $.ajax({
+                    type: 'post',
+                    url: '/pickAddress/update',
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function (data) {
+                        if (data) {
+                            layer.msg('修改成功');
+                        }else {
+                            layer.msg('修改失败');
+                        }
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+
+</div>
+</body>
+</html>

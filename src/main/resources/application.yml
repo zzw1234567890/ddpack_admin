@@ -1,0 +1,44 @@
+server:
+  port: 8081
+spring:
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/ddpack
+    username: root
+    password: root
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      max-lifetime: 90000
+  thymeleaf:
+    prefix: classpath:/templates/
+    mode: HTML5
+    cache: false
+  resources:
+    chain:
+      strategy:
+        content:
+          enabled: true
+          paths: /**
+
+mybatis:
+  mapper-locations: classpath:mapper/**/*.xml
+  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+
+fileUpload:
+  minSize: 1024
+  maxSize: 5242880
+  allowSuffix: jpg,jpeg,png
+  path:
+  dir: /upload/
+  prefix:
+
+app:
+  appId: wxda27d0fbc9f20ec4
+  secret: secret
+  grantType: grant_type
+  openIdUrl: https://api.weixin.qq.com/sns/jscode2session
+
+map:
+  url: https://apis.map.qq.com/ws/place/v1/search
+  key: BTDBZ-HWMKX-65647-ZTCTB-OJEUT-IGBTH

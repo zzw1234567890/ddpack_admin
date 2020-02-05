@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.amazing.ddpack_admin.dao.DormitoryDao">
+<!--    根据学校id获取寝室-->
+    <select id="selectBySchoolId" resultType="top.amazing.ddpack_admin.dao.base.Dormitory">
+        select id,name from dormitory where school_id=#{schoolId} and del=0
+    </select>
+    <!--    添加-->
+    <insert id="insert">
+        insert into dormitory(name,school_id)
+        value (#{name},#{schoolId})
+    </insert>
+    <!--    根据id获取信息-->
+    <select id="selectById" resultType="top.amazing.ddpack_admin.dao.base.Dormitory">
+        select name,school_id as 'schoolId' from dormitory where id=#{id} and del=0;
+    </select>
+    <!--    更新信息-->
+    <update id="update">
+        update dormitory set name=#{name},school_id=#{schoolId} where id=#{id}
+    </update>
+    <!--    删除-->
+    <update id="del">
+        update dormitory set del = 1 where id in
+        <foreach collection="list" item = "id" open="(" separator="," close=")" index="index">
+            #{id}
+        </foreach>
+    </update>
+    <!--    条件查询-->
+    <select id="query" resultType="top.amazing.ddpack_admin.dao.base.Dormitory">
+        select id, school_id, name
+        from dormitory
+        where del=0
+        <if test="name != null and name != ''">and name like "%"#{name}"%"</if>
+        <if test="schoolId != null and schoolId != ''">and school_id=#{schoolId}</if>
+        <if test="startTime != null and startTime != ''">and create_time &gt; #{startTime}</if>
+        <if test="endTime != null and endTime != ''">and create_time &lt; #{endTime}</if>
+        order by id limit #{page},#{limit}
+    </select>
+    <select id="queryCount" resultType="java.lang.Integer">
+        select count(1) from dormitory where del=0
+        <if test="name != null and name != ''">and school_id=#{name}</if>
+        <if test="schoolId != null and schoolId != ''">and name like "%"#{schoolId}"%"</if>
+        <if test="startTime != null and startTime != ''">and create_time &gt; #{startTime}</if>
+        <if test="endTime != null and endTime != ''">and create_time &lt; #{endTime}</if>
+    </select>
+</mapper>

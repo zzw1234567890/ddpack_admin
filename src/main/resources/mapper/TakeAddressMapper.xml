@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.amazing.ddpack_admin.dao.TakeAddressDao">
+    <!--    添加-->
+    <insert id="insert">
+        insert into take_address(user_id,dormitory_id,take_address,name,take_phone,sex)
+        value (#{userId},#{dormitoryId},#{takeAddress},#{name},#{takePhone},#{sex})
+    </insert>
+    <!--    根据id获取信息-->
+    <select id="selectById" resultType="top.amazing.ddpack_admin.dao.base.TakeAddress">
+        select user_id, dormitory_id, take_address, name, take_phone, sex, is_default
+        from take_address
+        where id=#{id} and del=0
+    </select>
+    <!--    更新信息-->
+    <update id="update">
+        update take_address set take_address=#{takeAddress},is_default=#{isDefault},
+            name=#{name},take_phone=#{takePhone},sex=#{sex}
+        where id=#{id}
+    </update>
+    <!--    删除-->
+    <update id="del">
+        update take_address set del = 1 where id in
+        <foreach collection="list" item = "id" open="(" separator="," close=")" index="index">
+            #{id}
+        </foreach>
+    </update>
+    <!--    条件查询-->
+    <select id="query" resultType="top.amazing.ddpack_admin.dao.base.TakeAddress">
+        select id, user_id, dormitory_id, take_address, name, take_phone, sex
+        from take_address
+        where del=0
+        <if test="userId != null and userId != ''">and user_id=#{userId}</if>
+        <if test="takeAddress != null and takeAddress != ''">and take_address like "%"#{takeAddress}"%"</if>
+        <if test="takePhone != null and takePhone != ''">and take_phone like "%"#{takePhone}"%"</if>
+        <if test="name != null and name != ''">and `name` like "%"#{name}"%"</if>
+        <if test="sex != null and sex != ''">and sex=#{sex}</if>
+        <if test="startTime != null and startTime != ''">and create_time &gt; #{startTime}</if>
+        <if test="endTime != null and endTime != ''">and create_time &lt; #{endTime}</if>
+        limit #{page},#{limit}
+    </select>
+    <select id="queryCount" resultType="java.lang.Integer">
+        select count(1) from take_address
+        where del=0
+        <if test="userId != null and userId != ''">and user_id=#{userId}</if>
+        <if test="takeAddress != null and takeAddress != ''">and take_address like "%"#{takeAddress}"%"</if>
+        <if test="takePhone != null and takePhone != ''">and take_phone like "%"#{takePhone}"%"</if>
+        <if test="name != null and name != ''">and `name` like "%"#{name}"%"</if>
+        <if test="sex != null and sex != ''">and sex=#{sex}</if>
+        <if test="startTime != null and startTime != ''">and create_time &gt; #{startTime}</if>
+        <if test="endTime != null and endTime != ''">and create_time &lt; #{endTime}</if>
+    </select>
+
+    <!--    根据orderId查询取货地址-->
+    <select id="getByOrderId" resultType="top.amazing.ddpack_admin.dao.extend.SelectData">
+        select p.id, concat(p.pick_address,'(',p.company,')') as 'name'
+        from pick_address p,(select pa.school_id from pick_address pa,`order` o where o.id=#{orderId} and o.pick_address_id=pa.id) a
+        where p.school_id=a.school_id and p.del=0
+    </select>
+</mapper>

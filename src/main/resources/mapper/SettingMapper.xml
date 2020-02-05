@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.amazing.ddpack_admin.dao.SettingDao">
+
+<!--    获取所有设置-->
+    <select id="getAll" resultType="top.amazing.ddpack_admin.dao.base.Setting">
+        select rate, take, pick, transfer from setting where id=1
+    </select>
+
+<!--    更新设置-->
+    <update id="update">
+        update setting
+        set rate=#{rate},take=#{take},pick=#{pick},transfer=#{transfer}
+        where id=1
+    </update>
+</mapper>

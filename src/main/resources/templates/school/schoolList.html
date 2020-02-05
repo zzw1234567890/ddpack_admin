@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.w3.org/1999/xhtml"
+      layout:decorator="layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h2>学校信息管理</h2>
+    <br>
+    <form class="layui-form layui-form-pane form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">城市</label>
+            <div class="layui-input-inline">
+                <input type="text" name="city" placeholder="请输入城市名称" autocomplete="off" class="layui-input">
+            </div>
+            <label class="layui-form-label">名称</label>
+            <div class="layui-input-inline">
+                <input type="text" name="name" placeholder="请输入名称" autocomplete="off" class="layui-input" id="name">
+            </div>
+            <label class="layui-form-label">添加时间从</label>
+            <div class="layui-input-inline">
+                <input type="text" name="startTime" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input"
+                       id="startTime">
+            </div>
+            <label class="layui-form-label">到</label>
+            <div class="layui-input-inline">
+                <input type="text" name="endTime" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input"
+                       id="endTime">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <button class="layui-btn" id="query" lay-submit lay-filter="querySubmit">查询</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </form>
+
+    <table id="table" lay-filter="table"></table>
+
+    <input type="hidden" name="name" value="" title="" class="tpl" lay-filter="nameRadio">
+    <form id="update" class="layui-form layui-form-pane form" action="" lay-filter="updateForm">
+        <div class="layui-form-item">
+            <label class="layui-form-label">城市</label>
+            <div class="layui-input-inline">
+                <input type="text" name="city" placeholder="请输入城市名称" autocomplete="off" class="layui-input" lay-verify="required">
+            </div>
+            <label class="layui-form-label">学校名称</label>
+            <div class="layui-input-inline">
+                <input type="text" name="name" placeholder="请输入学校名称" autocomplete="off" class="layui-input" lay-verify="required">
+            </div>
+            <button class="layui-btn" lay-submit lay-filter="searchSubmit">搜索</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">纬度</label>
+            <div class="layui-input-inline">
+                <input type="text" name="lat" value="" id="lat" class="layui-input" disabled>
+            </div>
+            <label class="layui-form-label">经度</label>
+            <div class="layui-input-inline">
+                <input type="text" name="lng" value="" id="lng" class="layui-input" disabled>
+            </div>
+        </div>
+        <div class="layui-input-inline list" style="margin-bottom: 20px"></div>
+        <div class="layui-form-item">
+            <button class="layui-btn" id="insert" lay-submit lay-filter="updateSubmit">修改</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </form>
+
+    <script src="https://map.qq.com/api/gljs?v=1.exp&key=OB4BZ-D4W3U-B7VVO-4PJWW-6TKDJ-WPB77"></script>
+    <script src="/js/map.js"></script>
+
+    <script>
+        layui.use(['form', 'laydate', 'table'], function () {
+            var form = layui.form;
+            var table = layui.table;
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '#startTime'
+            });
+            laydate.render({
+                elem: '#endTime'
+            });
+
+            var tableIns = tableInstance(table, '/school/query', [
+                {field: 'id', title: 'ID', width: 80, sort: true, fixed: 'left'},
+                {field: 'name', title: '昵称'},
+                {field: 'city', title: '城市'},
+                {field: 'lat', title: '维度'},
+                {field: 'lng', title: '经度'}
+            ]);
+            querySubmit(form, tableIns);
+            listenTool(table, form, '/school/get', '/school/update', '/school/del', '/school/insert');
+            // 监听查询提交
+            form.on('submit(searchSubmit)', function (data) {
+                // layer.msg(JSON.stringify(data.field));
+                var field = data.field;
+                var addressData = getData('/school/getLocation',field);
+                var list = $('.list');
+                list.empty();
+                for (var key in addressData.data){
+                    var temp = addressData.data[key];
+                    var tpl = $('.tpl').clone();
+                    var title = temp.title + ' [' + temp.address + '] (' + temp.location.lat + ', ' + temp.location.lng + ')';
+                    tpl.attr('title',title);
+                    tpl.attr('type','radio');
+                    tpl.attr('value',temp.title);
+                    tpl.attr('lat',temp.location.lat);
+                    tpl.attr('lng',temp.location.lng);
+                    tpl.removeClass('tpl');
+                    list.append(tpl);
+                }
+                form.render();
+                return false;
+            });
+            // 监听单选选中
+            form.on('radio(nameRadio)', function(data){
+                var obj = $(data.elem);
+                $('#lat').val(obj.attr('lat'));
+                $('#lng').val(obj.attr('lng'));
+            });
+        });
+    </script>
+</div>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.w3.org/1999/xhtml"
+      layout:decorator="layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <h2>功能管理</h2>
+    <br>
+    <form class="layui-form layui-form-pane form" action="" enctype="multipart/form-data" lay-filter="update">
+        <div class="layui-form-item">
+            <label class="layui-form-label">税率(%)</label>
+            <div class="layui-input-inline">
+                <input type="text" name="rate" required lay-verify="required" placeholder="请输入税率" autocomplete="off"
+                       class="layui-input" th:value="${setting.getRate()}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">下单功能</label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="take" lay-text="开启|关闭" lay-skin="switch"
+                       th:checked="${setting.getTake() == 1 ? 'checked' : 'no'}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">接单功能</label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="pick" lay-text="开启|关闭" lay-skin="switch"
+                       th:checked="${setting.getPick() == 1 ? 'checked' : 'no'}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">转账功能</label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="transfer" lay-text="开启|关闭" lay-skin="switch"
+                       th:checked="${setting.getTransfer() == 1 ? 'checked' : 'no'}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <button class="layui-btn" lay-submit lay-filter="submit">提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </form>
+    <script>
+        layui.use('form', function () {
+            var form = layui.form;
+            // 更新设置信息
+            form.on('submit(submit)', function (data) {
+                var field = data.field;
+                field.take = field.take === 'on' ? 1 : 0;
+                field.pick = field.pick === 'on' ? 1 : 0;
+                field.transfer = field.transfer === 'on' ? 1 : 0;
+                console.log(field);
+                $.ajax({
+                    type: 'post',
+                    url: '/system/fun/update',
+                    data: field,
+                    success: function (data) {
+                        if (data) {
+                            layer.msg('修改成功');
+                            location.reload();
+                        } else {
+                            layer.msg('修改失败');
+                        }
+                    }
+                });
+                return false;
+            });
+        });
+    </script>
+
+</div>

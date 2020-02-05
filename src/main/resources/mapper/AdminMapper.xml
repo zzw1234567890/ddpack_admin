@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.amazing.ddpack_admin.dao.AdminDao">
+    <!--    登录-->
+    <select id="login" resultType="top.amazing.ddpack_admin.dao.base.Admin">
+        select id,name,head from admin where email=#{email} and password=#{password};
+    </select>
+<!--    获取管理员信息-->
+    <select id="selectById" resultType="top.amazing.ddpack_admin.dao.base.Admin">
+        select name,email,password,head from admin where id=#{id};
+    </select>
+<!--    修改管理员信息-->
+    <update id="update">
+        update admin set name=#{name},email=#{email},password=#{password},head=#{head} where id=#{id}
+    </update>
+</mapper>

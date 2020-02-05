@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.w3.org/1999/xhtml" layout:decorator="layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h2>添加学校</h2>
+    <br>
+    <form class="layui-form layui-form-pane form" action="" lay-filter="form">
+        <div class="layui-form-item">
+            <label class="layui-form-label">免单码</label>
+            <div class="layui-input-inline">
+                <input type="text" name="code" placeholder="请输入免单码" autocomplete="off" class="layui-input">
+            </div>
+            <button class="layui-btn" lay-submit lay-filter="generate">随机生成</button>
+        </div>
+        <div class="layui-form-item">
+            <button class="layui-btn" id="insert" lay-submit lay-filter="insertSubmit">添加</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </form>
+
+    <script>
+        layui.use('form', function() {
+            var form = layui.form;
+            // 监听添加提交
+            form.on('submit(insertSubmit)', function (data) {
+                // layer.msg(JSON.stringify(data.field));
+                var field = data.field;
+                if (!field.code){
+                    layer.msg('请输入免单码');
+                    return false;
+                }
+                $.ajax({
+                    type: 'post',
+                    url: '/admin/freeCode/insertAction',
+                    data: field,
+                    success: function (data) {
+                        if (data){
+                            $('.form')[0].reset();
+                            $('.list').empty();
+                            layer.msg("添加成功");
+                        }else {
+                            layer.msg("添加失败");
+                        }
+                    }
+                });
+                return false;
+            });
+            // 监听生成随机码按钮
+            form.on('submit(generate)',function (data) {
+                var code = getData('/admin/freeCode/generate');
+                form.val('form',{
+                    'code': code
+                });
+                return false;
+            });
+        });
+    </script>
+</div>
+</body>
+</html>

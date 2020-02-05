@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.amazing.ddpack_admin.dao.CourierDao">
+    <!--    注册-->
+    <insert id="insert">
+        insert into courier(user_id, identity,courier_name,courier_phone)
+        value (#{cuId},#{identity},#{courierName},#{courierPhone})
+    </insert>
+    <!--    根据id获取记录-->
+    <select id="getById" resultType="top.amazing.ddpack_admin.dao.base.Courier">
+        select courier_name,courier_phone,grade,identity_state,`identity`,school_id,student_id,admission_time,
+            graduation_time,education
+        from courier
+        where id=#{id} and del=0
+    </select>
+    <!--    更新用户信息-->
+    <update id="update">
+        update courier set grade=#{grade},identity_state=#{identityState}
+        where id=#{id}
+    </update>
+    <!--    删除-->
+    <update id="del">
+        update courier set del = 1 where id in
+        <foreach collection="list" item = "id" open="(" separator="," close=")" index="index">
+            #{id}
+        </foreach>
+    </update>
+    <!--    获取用户列表-->
+    <select id="query" resultType="top.amazing.ddpack_admin.dao.base.Courier">
+        select id,courier_name,courier_phone,grade,identity_state
+        from courier where del=0
+        <if test="name != null and name != ''">and courier_name like "%"#{name}"%"</if>
+        <if test="grade != null and grade != ''">and grade &gt; #{grade}</if>
+        <if test="identityState != null and identityState != ''">and identity_state=#{identityState}</if>
+        <if test="startTime != null and startTime != ''">and create_time &gt; #{startTime}</if>
+        <if test="endTime != null and endTime != ''">and create_time &lt; #{endTime}</if>
+        limit #{page},#{limit}
+    </select>
+    <select id="queryCount" resultType="java.lang.Integer">
+        select count(1)
+        from courier where del=0
+        <if test="name != null and name != ''">and courier_name like "%"#{name}"%"</if>
+        <if test="grade != null and grade != ''">and grade &gt; #{grade}</if>
+        <if test="identityState != null and identityState != ''">and identity_state=#{identityState}</if>
+        <if test="startTime != null and startTime != ''">and create_time &gt; #{startTime}</if>
+        <if test="endTime != null and endTime != ''">and create_time &lt; #{endTime}</if>
+    </select>
+</mapper>

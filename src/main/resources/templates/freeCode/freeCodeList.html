@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.w3.org/1999/xhtml"
+      layout:decorator="layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h2>学校信息管理</h2>
+    <br>
+    <form class="layui-form layui-form-pane form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">昵称</label>
+            <div class="layui-input-inline">
+                <input type="text" name="nickname" placeholder="请输入昵称称" autocomplete="off" class="layui-input">
+            </div>
+            <label class="layui-form-label">免单码</label>
+            <div class="layui-input-inline">
+                <input type="text" name="code" placeholder="请输入免单码" autocomplete="off" class="layui-input">
+            </div>
+            <label class="layui-form-label">添加时间从</label>
+            <div class="layui-input-inline">
+                <input type="text" name="startTime" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input"
+                       id="startTime">
+            </div>
+            <label class="layui-form-label">到</label>
+            <div class="layui-input-inline">
+                <input type="text" name="endTime" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input"
+                       id="endTime">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">订单号</label>
+            <div class="layui-input-inline">
+                <input type="text" name="orderId" placeholder="请输入免单码" autocomplete="off" class="layui-input">
+            </div>
+            <button class="layui-btn" id="query" lay-submit lay-filter="querySubmit">查询</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </form>
+
+    <table id="table" lay-filter="table"></table>
+
+    <form id="update" class="layui-form layui-form-pane form" action="" lay-filter="updateForm">
+        <div class="layui-form-item">
+            <label class="layui-form-label">昵称</label>
+            <div class="layui-input-inline">
+                <input type="text" name="nickname" placeholder="请输入昵称" disabled autocomplete="off" class="layui-input">
+            </div>
+            <label class="layui-form-label">订单号</label>
+            <div class="layui-input-inline">
+                <input type="text" name="num" placeholder="请输入订单号" value="" class="layui-input" disabled>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">免单码</label>
+            <div class="layui-input-inline">
+                <input type="text" name="code" placeholder="请输入免单码" autocomplete="off" class="layui-input" lay-verify="required">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <button class="layui-btn" id="insert" lay-submit lay-filter="updateSubmit">修改</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </form>
+
+    <script>
+        layui.use(['form', 'laydate', 'table'], function () {
+            var form = layui.form;
+            var table = layui.table;
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '#startTime'
+            });
+            laydate.render({
+                elem: '#endTime'
+            });
+
+            var tableIns = tableInstance(table, '/admin/freeCode/query', [
+                {field: 'id', title: 'ID', width: 80, sort: true, fixed: 'left'},
+                {field: 'nickname', title: '昵称'},
+                {field: 'code', title: '免单码'},
+                {field: 'orderId', title: '订单号'}
+            ]);
+            querySubmit(form, tableIns);
+            listenTool(table, form, '/admin/freeCode/get', '/admin/freeCode/update', '/admin/freeCode/del', '/admin/freeCode/insert');
+        });
+    </script>
+</div>
+</body>
+</html>

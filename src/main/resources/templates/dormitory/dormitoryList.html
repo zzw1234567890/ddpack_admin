@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.w3.org/1999/xhtml" layout:decorator="layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h2>寝室信息管理</h2>
+    <br>
+    <form class="layui-form layui-form-pane form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">所属学校</label>
+            <div class="layui-input-inline">
+                <select name="schoolId" id="schoolId-query" lay-search>
+                    <option value="">请选择</option>
+                    <option value="1" th:each="school : ${schoolList}" th:value="${school.id}" th:text="${school.name}">湖南农业大学</option>
+                </select>
+            </div>
+            <label class="layui-form-label">名称</label>
+            <div class="layui-input-inline">
+                <input type="text" name="name" placeholder="请输入名称" autocomplete="off" class="layui-input" id="name">
+            </div>
+            <label class="layui-form-label">添加时间从</label>
+            <div class="layui-input-inline">
+                <input type="text" name="startTime" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input" id="startTime">
+            </div>
+            <label class="layui-form-label">到</label>
+            <div class="layui-input-inline">
+                <input type="text" name="endTime" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input" id="endTime">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <button class="layui-btn" id="query" lay-submit lay-filter="querySubmit">查询</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </form>
+
+    <table id="table" lay-filter="table"></table>
+
+    <form id="update" class="layui-form layui-form-pane form" action="" lay-filter="updateForm">
+        <div class="layui-form-item">
+            <label class="layui-form-label">所属学校</label>
+            <div class="layui-input-inline">
+                <select name="schoolId" id="schoolId-update" lay-search lay-verify="required">
+                    <option value="">请选择</option>
+                    <option value="1" th:each="school : ${schoolList}" th:value="${school.id}" th:text="${school.name}">湖南农业大学</option>
+                </select>
+            </div>
+            <label class="layui-form-label">名称</label>
+            <div class="layui-input-inline">
+                <input type="text" name="name" placeholder="请输入名称" autocomplete="off" class="layui-input" required lay-verify="required">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <button class="layui-btn" lay-submit lay-filter="updateSubmit">提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </form>
+
+    <script>
+        layui.use(['form','laydate','table'], function() {
+            var form = layui.form;
+            var table = layui.table;
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '#startTime'
+            });
+            laydate.render({
+                elem: '#endTime'
+            });
+
+            var tableIns = tableInstance(table,'/dormitory/query',[
+                {field: 'id', title: 'ID', width: 80, sort: true, fixed: 'left'},
+                {field: 'schoolId', title: '所属学校id'},
+                {field: 'name', title: '名称'}
+            ]);
+            querySubmit(form,tableIns);
+            listenTool(table,form,'/dormitory/get','/dormitory/update','/dormitory/del','/dormitory/insert');
+        });
+    </script>
+</div>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.w3.org/1999/xhtml" layout:decorator="layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <style>
+        #img{
+            width: 300px;
+            height: 300px;
+        }
+        .right{
+            display: inline-block;
+            margin-left: 15px;
+        }
+        .left{
+            vertical-align: top;
+            display: inline-block;
+        }
+        .head-describe{
+            position: relative;
+            vertical-align: top;
+            top: 18px;
+            left: 15px;
+            color: gray;
+        }
+    </style>
+    <h2>派送员管理</h2>
+    <br>
+    <form class="layui-form layui-form-pane form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">姓名</label>
+            <div class="layui-input-inline">
+                <input type="text" name="nickName" placeholder="请输入姓名" autocomplete="off" class="layui-input">
+            </div>
+            <label class="layui-form-label">评级大于</label>
+            <div class="layui-input-inline">
+                <input type="text" name="grade" placeholder="请输入评级" autocomplete="off" class="layui-input">
+            </div>
+            <label class="layui-form-label">审核状态</label>
+            <div class="layui-input-inline">
+                <select name="identityState" id="identityState-query">
+                    <option value="">请选择</option>
+                    <option value="1">待审核</option>
+                    <option value="2">已通过</option>
+                    <option value="3">未通过</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">注册时间从</label>
+            <div class="layui-input-inline">
+                <input type="text" name="startTime" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input" id="startTime">
+            </div>
+            <label class="layui-form-label">到</label>
+            <div class="layui-input-inline">
+                <input type="text" name="endTime" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input" id="endTime">
+            </div>
+            <button class="layui-btn" id="query" lay-submit lay-filter="querySubmit">查询</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </form>
+
+    <table id="table" lay-filter="table"></table>
+
+    <form id="update" class="layui-form layui-form-pane form" action="" lay-filter="updateForm">
+        <div class="left">
+            <div class="layui-input-inline" style="width: auto;">
+                <img src="/img/head.jpg" alt="" id="img">
+            </div>
+        </div>
+        <div class="right">
+            <div class="layui-form-item">
+                <label class="layui-form-label">姓名</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="courierName" placeholder="请输入昵称" disabled autocomplete="off" class="layui-input" required lay-verify="required">
+                </div>
+                <label class="layui-form-label">联系电话</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="courierPhone" placeholder="请输入联系电话" disabled autocomplete="off" class="layui-input" lay-verify="required">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">学校id</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="schoolId" placeholder="请输入学校id" disabled autocomplete="off" class="layui-input" required lay-verify="required">
+                </div>
+                <label class="layui-form-label">学号</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="studentId" placeholder="请输入学号" disabled autocomplete="off" class="layui-input" lay-verify="required">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">入学时间</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="admissionTime" placeholder="请输入入学时间" disabled autocomplete="off" class="layui-input" required lay-verify="required">
+                </div>
+                <label class="layui-form-label">毕业时间</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="graduationTime" placeholder="请输入毕业时间" disabled autocomplete="off" class="layui-input" lay-verify="required">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">学历</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="education" placeholder="请输入学历" disabled autocomplete="off" class="layui-input" required lay-verify="required">
+                </div>
+                <label class="layui-form-label">评级</label>
+                <div class="layui-input-inline">
+                    <input type="text" name="grade" placeholder="请输入评级" autocomplete="off" class="layui-input" lay-verify="required">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">审核状态</label>
+                <div class="layui-input-inline">
+                    <select name="identityState" id="identityState-update" lay-verify="required">
+                        <option value="">请选择</option>
+                        <option value="1">待审核</option>
+                        <option value="2">已通过</option>
+                        <option value="3">未通过</option>
+                    </select>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <button class="layui-btn" lay-submit lay-filter="updateSubmit">提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+
+    </form>
+
+    <script>
+        layui.use(['form','laydate','table'], function() {
+            var form = layui.form;
+            var table = layui.table;
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '#startTime'
+            });
+            laydate.render({
+                elem: '#endTime'
+            });
+
+            var tableIns = tableInstance(table,'/courier/query',[
+                {field: 'id', title: 'ID', width: 80, sort: true, fixed: 'left'},
+                {field: 'courierName', title: '姓名'},
+                {field: 'courierPhone', title: '联系电话'},
+                {field: 'grade', title: '评级'},
+                {field: 'identityState', title: '审核状态', templet: function (d) {
+                    return $('#identityState-query > option[value="'+d.identityState+'"]').text();
+                }}
+            ]);
+            querySubmit(form,tableIns);
+            listenTool(table,form,'/courier/getById','/courier/update','/courier/del');
+        });
+    </script>
+</div>
+</body>
+</html>

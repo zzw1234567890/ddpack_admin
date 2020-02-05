@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.amazing.ddpack_admin.dao.UserDao">
+<!--    登录-->
+    <select id="selectByOpenId" resultType="top.amazing.ddpack_admin.dao.base.User">
+        select id,school_id from user where open_id=#{openId};
+    </select>
+<!--    注册-->
+    <insert id="insert">
+        insert into user(open_id)
+        value (#{openId})
+    </insert>
+<!--    根据id获取用户信息-->
+    <select id="selectById" resultType="top.amazing.ddpack_admin.dao.base.User">
+        select nickname, head, integral, type, open_id
+        from user where id=#{id};
+    </select>
+<!--    更新用户信息-->
+    <update id="update">
+        update user set del=del
+        <if test="schoolId != null and schoolId != ''">,school_id=#{schoolId}</if>
+        <if test="nickname != null and nickname != ''">,nickname=#{nickname}</if>
+        <if test="head != null and head != ''">,head=#{head}</if>
+        <if test="integral != null and integral != ''">,integral=#{integral}</if>
+        <if test="type != null and type != ''">,type=#{type}</if>
+        <if test="memberTime != null and memberTime != ''">,member_time=#{memberTime}</if>
+        where id=#{id}
+    </update>
+<!--    删除-->
+    <update id="del">
+        update user set del = 1 where id in
+        <foreach collection="list" item = "id" open="(" separator="," close=")" index="index">
+            #{id}
+        </foreach>
+    </update>
+<!--    获取用户列表-->
+    <select id="query" resultType="top.amazing.ddpack_admin.dao.base.User">
+        select id, open_id, nickname, integral, type from user where del=0
+        <if test="nickname != null and nickname != ''">and nickname like "%"#{nickname}"%"</if>
+        <if test="integral != null and integral != ''">and integral &gt; #{integral}</if>
+        <if test="type != null and type != ''">and type=#{type}</if>
+        <if test="startTime != null and startTime != ''">and create_time &gt; #{startTime}</if>
+        <if test="endTime != null and endTime != ''">and create_time &lt; #{endTime}</if>
+        limit #{page},#{limit}
+    </select>
+    <select id="queryCount" resultType="java.lang.Integer">
+        select count(1) from user where del=0
+        <if test="nickname != null and nickname != ''">and nickname like "%"#{nickname}"%"</if>
+        <if test="integral != null and integral != ''">and integral &gt; #{integral}</if>
+        <if test="type != null and type != ''">and type=#{type}</if>
+        <if test="startTime != null and startTime != ''">and create_time &gt; #{startTime}</if>
+        <if test="endTime != null and endTime != ''">and create_time &lt; #{endTime}</if>
+    </select>
+</mapper>

@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.w3.org/1999/xhtml" layout:decorator="layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<div layout:fragment="content">
+<style>
+    .head-img{
+        border-radius: 5px;
+        width: 300px;
+        height: 300px;
+    }
+    .head-describe{
+        position: relative;
+        vertical-align: top;
+        top: 18px;
+        left: 20px;
+        color: gray;
+    }
+    #submit{
+        display: none;
+    }
+    .right{
+        display: inline-block;
+        margin-left: 15px;
+    }
+    .left{
+        vertical-align: top;
+        display: inline-block;
+    }
+</style>
+<h2>个人资料修改</h2>
+<br>
+<form class="layui-form layui-form-pane form" action="" enctype="multipart/form-data" lay-filter="update">
+    <div class="left">
+        <!--/*@thymesVar id="admin" type="top.amazing.ddpack.dao.base.Admin"*/-->
+        <img class="head-img" src="/img/head.jpg" alt="" th:src="${session.admin.head}">
+    </div>
+    <div class="right">
+        <div class="layui-form-item">
+            <div class="layui-btn" id="upload">上传图片</div>
+            <span class="head-describe">图片分辨率 : 300 * 300</span>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">昵称</label>
+            <div class="layui-input-inline">
+                <input type="text" name="name" required lay-verify="required" placeholder="请输入姓名" autocomplete="off" class="layui-input name">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">邮箱</label>
+            <div class="layui-input-inline">
+                <input type="text" name="email" required lay-verify="email" placeholder="请输入邮箱" autocomplete="off" class="layui-input email">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">密码</label>
+            <div class="layui-input-inline">
+                <input type="text" name="password" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input password">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <button class="layui-btn" lay-submit lay-filter="submit">提交</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </div>
+</form>
+<script>
+    layui.use(['form','upload'], function() {
+        var form = layui.form;
+        var upload = layui.upload;
+        var uploadFile;
+        // 获取管理员信息
+        $.ajax({
+            type: 'get',
+            url: '/getInfo',
+            data: {},
+            success: function (data) {
+                // console.log(data);
+                form.val("update",data);
+            }
+        });
+        // 更新管理员信息
+        form.on('submit(submit)', function (data) {
+            var field = data.field;
+            console.log(field);
+            var formData = new FormData();
+            formData.append('file', uploadFile);
+            formData.append('data', JSON.stringify(field));
+            $.ajax({
+                type: 'post',
+                url: '/update',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    if (data) {
+                        $('#title-head').attr('src',$('.head-img').attr('src'));
+                        $('#title-name').text(field.name);
+                        layer.msg('修改成功');
+                    }else {
+                        layer.msg('修改失败');
+                    }
+                }
+            });
+            return false;
+        });
+        // 文件上传
+        upload.render({
+            elem: '#upload'
+            // , url: '/api/upload/'
+            , auto: false //选择文件后不自动上传
+            , choose: function (obj) {
+                obj.preview(function (index, file, result) {
+                    // console.log(index); //得到文件索引
+                    // console.log(file); //得到文件对象
+                    uploadFile = file;
+                    $('.head-img').attr('src', result);
+                });
+            }
+        });
+    });
+</script>
+
+</div>

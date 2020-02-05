@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="top.amazing.ddpack_admin.dao.FreeCodeDao">
+    <!--    添加-->
+    <insert id="insert">
+        insert into free_code(user_id, code,order_id)
+        value (#{userId},#{code},#{orderId})
+    </insert>
+    <!--    根据id获取信息-->
+    <select id="selectById" resultType="top.amazing.ddpack_admin.dao.base.FreeCode">
+        select (select nickname from user where id=free_code.user_id), code,order_id from free_code where id=#{id} and del=0;
+    </select>
+    <!--    查询code是否可用-->
+    <select id="selectByCode" resultType="java.lang.Integer">
+        select IFNULL(MAX(id),0) as 'id' from free_code where code=#{code} and order_id=0 and del=0;
+    </select>
+<!--    使用code-->
+    <update id="useCode">
+        update free_code set order_id=#{orderId},del=1 where id=#{id}
+    </update>
+    <!--    更新信息-->
+    <update id="update">
+        update free_code set code=#{code},order_id=#{orderId} where id=#{id}
+    </update>
+    <!--    删除-->
+    <update id="del">
+        update free_code set del = 1 where id in
+        <foreach collection="list" item = "id" open="(" separator="," close=")" index="index">
+            #{id}
+        </foreach>
+    </update>
+    <!--    获取学校列表-->
+    <select id="query" resultType="top.amazing.ddpack_admin.dao.base.FreeCode">
+        select id,code,order_id,(select nickname from user where id=free_code.user_id)
+        from free_code where del=0
+        <if test="nickname != null and nickname != ''">and user_id in (select id from user where nickname like "%"#{nickname}"%")</if>
+        <if test="code != null and code != ''">and code like "%"#{code}"%"</if>
+        <if test="orderId != null and orderId != ''">and order_id like "%"#{orderId}"%"</if>
+        <if test="startTime != null and startTime != ''">and create_time &gt; #{startTime}</if>
+        <if test="endTime != null and endTime != ''">and create_time &lt; #{endTime}</if>
+        order by id limit #{page},#{limit}
+    </select>
+    <select id="queryCount" resultType="java.lang.Integer">
+        select count(1) from free_code where del=0
+        <if test="nickname != null and nickname != ''">and user_id in (select id from user where nickname like "%"#{nickname}"%")</if>
+        <if test="code != null and code != ''">and code like "%"#{code}"%"</if>
+        <if test="orderId != null and orderId != ''">and order_id like "%"#{orderId}"%"</if>
+        <if test="startTime != null and startTime != ''">and create_time &gt; #{startTime}</if>
+        <if test="endTime != null and endTime != ''">and create_time &lt; #{endTime}</if>
+    </select>
+</mapper>

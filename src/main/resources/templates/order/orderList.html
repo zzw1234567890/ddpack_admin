@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.w3.org/1999/xhtml" layout:decorator="layout">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <h2>订单管理</h2>
+    <br>
+    <form class="layui-form layui-form-pane form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">下单用户id</label>
+            <div class="layui-input-inline">
+                <input type="text" name="userId" placeholder="请输入下单用户id" autocomplete="off" class="layui-input">
+            </div>
+            <label class="layui-form-label">派送员id</label>
+            <div class="layui-input-inline">
+                <input type="text" name="courierId" placeholder="请输入派送员id" autocomplete="off" class="layui-input">
+            </div>
+            <label class="layui-form-label">取货地址id</label>
+            <div class="layui-input-inline">
+                <input type="text" name="pickAddressId" placeholder="请输入取货地址id" autocomplete="off" class="layui-input">
+            </div>
+            <label class="layui-form-label">收货地址id</label>
+            <div class="layui-input-inline">
+                <input type="text" name="takeAddressId" placeholder="请输入收货地址id" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">订单状态</label>
+            <div class="layui-input-inline">
+                <select name="state" id="state-query">
+                    <option value="">请选择</option>
+                    <option value="1">待付款</option>
+                    <option value="2">待接单</option>
+                    <option value="3">待收货</option>
+                    <option value="4">待评价</option>
+                    <option value="5">已完成</option>
+                    <option value="6">已取消</option>
+                </select>
+            </div>
+            <label class="layui-form-label">取货码</label>
+            <div class="layui-input-inline">
+                <input type="text" name="code" placeholder="请输入取货码" autocomplete="off" class="layui-input">
+            </div>
+            <label class="layui-form-label">下单时间从</label>
+            <div class="layui-input-inline">
+                <input type="text" name="startTime" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input" id="startTime">
+            </div>
+            <label class="layui-form-label">到</label>
+            <div class="layui-input-inline">
+                <input type="text" name="endTime" placeholder="yyyy-MM-dd" autocomplete="off" class="layui-input" id="endTime">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">订单号</label>
+            <div class="layui-input-inline">
+                <input type="text" name="orderId" placeholder="请输入订单号" autocomplete="off" class="layui-input">
+            </div>
+            <button class="layui-btn" id="query" lay-submit lay-filter="querySubmit">查询</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </form>
+
+    <table id="table" lay-filter="table"></table>
+
+    <form id="update" class="layui-form layui-form-pane form" action="" lay-filter="updateForm">
+        <div class="layui-form-item">
+            <label class="layui-form-label">订单id</label>
+            <div class="layui-input-inline">
+                <input type="text" name="orderId" disabled placeholder="请输入订单id" autocomplete="off" class="layui-input">
+            </div>
+            <label class="layui-form-label">下单用户id</label>
+            <div class="layui-input-inline">
+                <input type="text" name="userId" disabled placeholder="请输入下单用户id" autocomplete="off" class="layui-input">
+            </div>
+            <label class="layui-form-label">派送员id</label>
+            <div class="layui-input-inline">
+                <input type="text" name="courierId" disabled placeholder="请输入派送员id" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">取货地址id</label>
+            <div class="layui-input-inline">
+                <input type="text" name="pickAddressId" disabled placeholder="请输入取货地址id" autocomplete="off" class="layui-input">
+            </div>
+            <label class="layui-form-label">收货地址id</label>
+            <div class="layui-input-inline">
+                <input type="text" name="takeAddressId" disabled placeholder="请输入送货地址id" autocomplete="off" class="layui-input">
+            </div>
+            <label class="layui-form-label">取货码</label>
+            <div class="layui-input-inline">
+                <input type="text" name="code" placeholder="请输入取货码" disabled autocomplete="off" class="layui-input" lay-verify="required">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">金额(元)</label>
+            <div class="layui-input-inline">
+                <input type="text" name="money" placeholder="请输入订单金额" disabled autocomplete="off" class="layui-input" lay-verify="required">
+            </div>
+            <label class="layui-form-label">接单时间</label>
+            <div class="layui-input-inline">
+                <input type="text" name="takeTime" placeholder="请输入接单时间" disabled autocomplete="off" class="layui-input">
+            </div>
+            <label class="layui-form-label">付款时间</label>
+            <div class="layui-input-inline">
+                <input type="text" name="payTime" placeholder="请输入付款时间" disabled autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">订单状态</label>
+            <div class="layui-input-inline">
+                <select name="state" id="state-update" lay-verify="required">
+                    <option value="">请选择</option>
+                    <option value="1">待付款</option>
+                    <option value="2">待接单</option>
+                    <option value="3">待收货</option>
+                    <option value="4">待评价</option>
+                    <option value="5">已完成</option>
+                    <option value="6">已取消</option>
+                </select>
+            </div>
+            <label class="layui-form-label">是否送达</label>
+            <div class="layui-input-inline">
+                <select name="isPick" lay-verify="required">
+                    <option value="">请选择</option>
+                    <option value="0">未送达</option>
+                    <option value="1">已送达</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <button class="layui-btn" lay-submit lay-filter="updateSubmit">修改</button>
+            <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+        </div>
+    </form>
+
+    <script>
+        layui.use(['form','laydate','table'], function() {
+            var form = layui.form;
+            var table = layui.table;
+            var laydate = layui.laydate;
+            laydate.render({
+                elem: '#startTime'
+            });
+            laydate.render({
+                elem: '#endTime'
+            });
+
+            var tableIns = tableInstance(table,'/order/query',[
+                {field: 'id', title: 'ID', width: 80, sort: true, fixed: 'left'},
+                {field: 'orderId', title: '订单id', width: 180},
+                {field: 'userId', title: '下单用户id'},
+                {field: 'courierId', title: '派送员id'},
+                {field: 'pickAddressId', title: '取货地址id'},
+                {field: 'takeAddressId', title: '收货地址id'},
+                {field: 'code', title: '取货码'},
+                {field: 'money', title: '金额(元)'},
+                {field: 'state', title: '订单状态', templet: function (d) {
+                    return $('#state-query > option[value="'+d.state+'"]').text();
+                }}
+            ]);
+            querySubmit(form,tableIns);
+            listenTool(table,form,'/order/get','/order/update','/order/del');
+            $('table').on('click','a[lay-event="edit"]',function () {
+                var orderId = $(this).parent().parent().parent().find('td[data-field="id"] > div').text();
+                var pickAddressList = getData('/pickAddress/getByOrder',{orderId: orderId});
+                // var takeAddressList = getData('/admin/takeAddress/getByOrder',{orderId: orderId});
+                reloadSelect('#pickAddressId-update',pickAddressList);
+                // reloadSelect('takeAddressId-update',takeAddressList);
+                // console.log(pickAddressList);
+            });
+        });
+    </script>
+</div>
+</body>
+</html>
